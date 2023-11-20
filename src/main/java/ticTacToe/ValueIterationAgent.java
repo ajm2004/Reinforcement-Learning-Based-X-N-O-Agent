@@ -8,6 +8,7 @@ package ticTacToe;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A Value Iteration Agent, only very partially implemented. The methods to implement are: 
@@ -38,7 +39,7 @@ public class ValueIterationAgent extends Agent {
 	/**
 	 * the number of iterations to perform - feel free to change this/try out different numbers of iterations
 	 */
-	int k=10;
+	int k=50;
 	
 	
 	/**
@@ -106,8 +107,29 @@ public class ValueIterationAgent extends Agent {
 	 */
 	public void iterate()
 	{
-		/* YOUR CODE HERE
-		 */
+		int l = k;
+		while(l != 0 && l>0){
+			Set<Game> games = valueFunction.keySet();
+			for(Game g: games){
+				if(!g.isTerminal()){
+					List<Move> moves = g.getPossibleMoves();
+					double max = -50;
+					for(Move m: moves){
+						double vs = 0;
+						List<TransitionProb> outcomes = mdp.generateTransitions(g, m);
+						for(int i = 0; i < outcomes.size(); i++){
+							Game vsp=outcomes.get(i).outcome.sPrime;
+							vs += outcomes.get(i).prob * (outcomes.get(i).outcome.localReward + this.discount * valueFunction.get(vsp));
+						}
+						if (max < vs){
+							max = vs;
+						}
+					}	
+					this.valueFunction.put(g, max);
+				}
+			}
+			l--;	
+		}
 	}
 	
 	/**This method should be run AFTER the train method to extract a policy according to {@link ValueIterationAgent#valueFunction}
@@ -118,10 +140,28 @@ public class ValueIterationAgent extends Agent {
 	 */
 	public Policy extractPolicy()
 	{
-		/*
-		 * YOUR CODE HERE
-		 */
-		return null;
+		Policy p = new Policy();
+		Set<Game> games = valueFunction.keySet();
+		for (Game g: games){
+			List<Move> moves = g.getPossibleMoves();
+			double max = -50;
+			Move best = null;
+			for(Move m: moves){
+				double vs = 0;
+				List<TransitionProb> outcomes = mdp.generateTransitions(g, m);
+				for(int i = 0; i < outcomes.size(); i++){
+					Game vsp=outcomes.get(i).outcome.sPrime;
+					vs += outcomes.get(i).prob * (outcomes.get(i).outcome.localReward + this.discount * valueFunction.get(vsp));
+				}
+				if (max < vs){
+					max = vs;
+					best = m;
+				}
+				p.policy.put(g, best);
+			}
+
+		}
+		return p;
 	}
 	
 	/**
