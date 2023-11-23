@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 /**
  * A policy iteration agent. You should implement the following methods:
  * (1) {@link PolicyIterationAgent#evaluatePolicy}: this is the policy evaluation step from your lectures
@@ -111,9 +112,16 @@ public class PolicyIterationAgent extends Agent {
 	 */
 	public void initRandomPolicy()
 	{
-		/*
-		 * YOUR CODE HERE
-		 */
+		Random random = new Random();
+		Set<Game> games = policyValues.keySet();
+		int rNo = 0;
+		for(Game g: games){
+			if(!g.isTerminal()){
+				List<Move> moves = g.getPossibleMoves();
+				rNo = random.nextInt(moves.size());
+				curPolicy.put(g, moves.get(rNo));
+			}
+		}
 	}
 	
 	
@@ -127,8 +135,33 @@ public class PolicyIterationAgent extends Agent {
 	 */
 	protected void evaluatePolicy(double delta)
 	{
-		/* YOUR CODE HERE */
-		
+		Set<Game> games = curPolicy.keySet();
+		boolean lD = false;
+		while(lD == false){
+			double maxChange = -100;
+			for(Game g: games){
+				if(!g.isTerminal()){
+					List<TransitionProb> ocms = mdp.generateTransitions(g, curPolicy.get(g));
+					double vs = 0;
+					for(int i = 0; i < ocms.size(); i++){
+						Game vsk = ocms.get(i).outcome.sPrime; 
+						vs += ocms.get(i).prob * (ocms.get(i).outcome.localReward + this.discount * policyValues.get(vsk));
+					}
+					double chng = (vs - policyValues.get(g));
+					if (chng > maxChange){
+						maxChange = chng;
+					}
+					this.policyValues.put(g, vs);
+				}
+				else{
+					this.policyValues.put(g, 0.0);
+				}	
+
+			}
+			if(maxChange < delta){
+				lD = true;
+			}
+		} 
 		
 	}
 		
@@ -142,9 +175,39 @@ public class PolicyIterationAgent extends Agent {
 	 */
 	protected boolean improvePolicy()
 	{
-		/* YOUR CODE HERE */
+		boolean imp = false;
+		Set<Game> games = curPolicy.keySet();
+		for(Game g: games){
+			if(!g.isTerminal()){
+				List<Move> moves = g.getPossibleMoves();
+				double max = -100;
+				Move best = null;
+				for(Move m: moves){
+					double vs = 0;
+					List<TransitionProb> outcomes = mdp.generateTransitions(g, m);
+					for(int i = 0; i < outcomes.size(); i++){
+						Game vsp=outcomes.get(i).outcome.sPrime;
+						vs += outcomes.get(i).prob * (outcomes.get(i).outcome.localReward + this.discount * policyValues.get(vsp));
+					}
+					if (max < vs){
+						max = vs;
+						best = m;
+					}
+				}
+				if(max > this.policyValues.get(g)){
+					this.curPolicy.put(g, best);
+					imp = true;
+				}
+			}
+			
 		
-		return false;
+		}
+		if (imp){
+			return true;
+		}else {
+			return false;}
+		
+
 	}
 	
 	/**
@@ -159,7 +222,12 @@ public class PolicyIterationAgent extends Agent {
 	 */
 	public void train()
 	{
-		/* YOUR CODE HERE */
+		boolean nconv = true;
+		while(nconv){
+			evaluatePolicy(this.delta);
+			nconv = improvePolicy();
+		}
+		super.policy = new Policy(curPolicy);
 		
 		
 		
