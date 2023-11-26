@@ -9,6 +9,7 @@ import java.util.Random;
 import java.util.Set;
 
 /**
+ * TEST
  * A Q-Learning agent with a Q-Table, i.e. a table of Q-Values. This table is implemented in the {@link QTable} class.
  * 
  *  The methods to implement are: 
