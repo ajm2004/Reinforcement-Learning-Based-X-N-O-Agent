@@ -1,5 +1,10 @@
 package ticTacToe;
 
+/**
+ * YEAR - 3 
+ * Ajay Menon
+ * H00418802
+ */
 
 import java.util.Date;
 import java.util.HashMap;
@@ -112,13 +117,21 @@ public class PolicyIterationAgent extends Agent {
 	 */
 	public void initRandomPolicy()
 	{
-		Random random = new Random();
+		// States
 		Set<Game> games = policyValues.keySet();
+		// Random instance
+		Random random = new Random();
+		// Random number
 		int rNo = 0;
+		// Looping through states
 		for(Game g: games){
+			// If game is not terminal
 			if(!g.isTerminal()){
+				// Get possible moves
 				List<Move> moves = g.getPossibleMoves();
+				// Random number within range of possible moves
 				rNo = random.nextInt(moves.size());
+				// Current policy is set to random move for that state
 				curPolicy.put(g, moves.get(rNo));
 			}
 		}
@@ -135,29 +148,43 @@ public class PolicyIterationAgent extends Agent {
 	 */
 	protected void evaluatePolicy(double delta)
 	{
-		Set<Game> games = curPolicy.keySet();
+		// Bool to check if change less than delta
 		boolean lD = false;
+		// States
+		Set<Game> games = curPolicy.keySet();
+		// Change > delta
 		while(lD == false){
+			// Setting max to minimal number 
 			double maxChange = -100;
+			// Looping through states
 			for(Game g: games){
+				// If game is not terminal
 				if(!g.isTerminal()){
+					// List of transition states/outcomes
 					List<TransitionProb> ocms = mdp.generateTransitions(g, curPolicy.get(g));
+					// Initializing VS to 0
 					double vs = 0;
+					// Looping through transition states/outcomes
 					for(int i = 0; i < ocms.size(); i++){
+						// Calculating VS by bellman fords equation (by retrieving necessary values)
 						Game vsk = ocms.get(i).outcome.sPrime; 
 						vs += ocms.get(i).prob * (ocms.get(i).outcome.localReward + this.discount * policyValues.get(vsk));
 					}
+					// Checking if change is greater than max, if so set new max
 					double chng = (vs - policyValues.get(g));
 					if (chng > maxChange){
 						maxChange = chng;
 					}
+					// Adding to hashmap
 					this.policyValues.put(g, vs);
 				}
+				// If game is terminal (val is 0)
 				else{
 					this.policyValues.put(g, 0.0);
 				}	
 
 			}
+			// Checking if change is less than delta
 			if(maxChange < delta){
 				lD = true;
 			}
@@ -175,33 +202,50 @@ public class PolicyIterationAgent extends Agent {
 	 */
 	protected boolean improvePolicy()
 	{
-		boolean imp = false;
+		// States
 		Set<Game> games = curPolicy.keySet();
+		// Bool to check if policy improved
+		boolean imp = false;
+		// Looping through states
 		for(Game g: games){
+			// If game is not terminal
 			if(!g.isTerminal()){
+				// List of possible moves
 				List<Move> moves = g.getPossibleMoves();
+				// Setting max to minimal number
 				double max = -100;
+				// Initializing best move
 				Move best = null;
+				// Looping through possible moves
 				for(Move m: moves){
+					// Initializing VS to 0
 					double vs = 0;
+					// List of transition states/outcomes
 					List<TransitionProb> outcomes = mdp.generateTransitions(g, m);
+					// Looping through transition states/outcomes
 					for(int i = 0; i < outcomes.size(); i++){
+						// Calculating VS by bellman fords equation (by retrieving necessary values)
 						Game vsp=outcomes.get(i).outcome.sPrime;
 						vs += outcomes.get(i).prob * (outcomes.get(i).outcome.localReward + this.discount * policyValues.get(vsp));
 					}
+					// Checking is VS lower than max, if so set new max
 					if (max < vs){
 						max = vs;
+						// Setting best move
 						best = m;
 					}
 				}
+				// Checking if max is greater than current policy value, if so set new policy
 				if(max > this.policyValues.get(g)){
 					this.curPolicy.put(g, best);
+					// Policy improved
 					imp = true;
 				}
 			}
 			
 		
 		}
+		// Returning true if policy improved else false
 		if (imp){
 			return true;
 		}else {
@@ -222,11 +266,16 @@ public class PolicyIterationAgent extends Agent {
 	 */
 	public void train()
 	{
+		// Bool to check if policy converged, nconv meaning not converged
 		boolean nconv = true;
+		// Looping until policy converged
 		while(nconv){
+			// Evaluating policy
 			evaluatePolicy(this.delta);
+			// Improving policy
 			nconv = improvePolicy();
 		}
+		// Setting policy to current policy after training
 		super.policy = new Policy(curPolicy);
 		
 		

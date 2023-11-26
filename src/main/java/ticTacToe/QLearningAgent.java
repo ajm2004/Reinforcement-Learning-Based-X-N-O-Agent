@@ -1,5 +1,11 @@
 package ticTacToe;
 
+/**
+ * YEAR - 3 
+ * Ajay Menon
+ * H00418802
+ */
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -143,253 +149,95 @@ public class QLearningAgent extends Agent {
 	
 	public void train() throws IllegalMoveException
 	{
-		// int episodes = this.numEpisodes;
-		// for(int i = 0; i < episodes; i++){
-		// 	TTTEnvironment env = new TTTEnvironment();
-		// 	while(!env.game.isTerminal()){
-		// 		Game game = env.game;
-		// 		double rand = Math.random();
-
-		// 		double cavg = 0;
-		// 		Outcome outcome = null;
-		// 		Game prevS = null;
-		// 		double smpl = 0;
-		// 		double reward = 0;
-		// 		Game sP = null;
-		// 		HashMap.Entry<Move, Double> maxQ = null;
-
-		// 		if (rand <= epsilon){
-		// 			List<Move> moves = game.getPossibleMoves();
-		// 			int MxMoves = moves.size()-1;
-		// 			int min = 0;
-		// 			int rNO = (int)(Math.random() * ((MxMoves - min) + 1)) + min;
-		// 			Move m = moves.get(rNO);
-		// 			if(game.isLegal(m)){
-		// 				try{
-		// 					outcome = env.executeMove(m);
-		// 				}
-		// 				catch(IllegalMoveException e){
-		// 					System.out.println("Illegal move");
-		// 				}
-		// 				reward = outcome.localReward;
-		// 				sP = outcome.sPrime;
-		// 				prevS = outcome.s;
-		// 				if (!sP.isTerminal()){
-		// 					maxQ = maxQ(sP);
-		// 					smpl = (reward + discount * (maxQ.getValue()));
-		// 					cavg = ((1-this.alpha)*qTable.getQValue(prevS, m)) + (this.alpha * smpl);
-		// 				}
-		// 				else{
-		// 					smpl = reward;
-		// 					cavg = ((1-this.alpha)*qTable.getQValue(prevS, m)) + (this.alpha * smpl);
-		// 					qTable.get(prevS).replace(m, cavg);
-		// 					break;
-		// 				}
-		// 				qTable.get(prevS).replace(m, cavg);
-		// 			}
-		// 		}
-		// 	}
-		// }
-//		for (int i=0; i<numEpisodes; i++){
-//			ArrayList<Double> gPrimeQ = new ArrayList<Double>();
-//			Game g = env.game;
-//			Move m = null;
-//			double qV = 0.0;
-//			double MaxqV = 0.0;
-//			double sample = 0.0;
-//
-//			while(!(g.isTerminal())){
-//				List<Move> moves = g.getPossibleMoves();
-//				Random rand = new Random();
-//				double r = rand.nextDouble();
-//
-//				if (r < epsilon){
-//					if (moves.size() != 0){
-//						Random rand2 = new Random();
-//						int r2 = rand2.nextInt(moves.size());
-//						m = moves.get(r2);
-//					}
-//
-//				}
-//				else{
-//					ArrayList<Double> BqList = new ArrayList<Double>();
-//					Double bQvalue = 0.0;
-//					for (Move move: moves){
-//						BqList.add(qTable.getQValue(g, move));
-//						bQvalue = Collections.max(BqList);
-//					}
-//					HashMap<Move, Double> BqMap = qTable.get(g);
-//
-//					for(Entry<Move, Double> entry: BqMap.entrySet()){
-//						if (entry.getValue() == bQvalue){
-//							m = entry.getKey();
-//						}
-//					}
-//					BqList.clear();
-//				}
-//				moves.clear();
-//				Outcome ocm = env.executeMove(m);
-//				Game gm = ocm.s;
-//				Game gPr = ocm.sPrime;
-//				List<Move> mPr = gPr.getPossibleMoves();
-//				for (Move mo : mPr){
-//					gPrimeQ.add(qTable.getQValue(gPr, mo));
-//					MaxqV = Collections.max(gPrimeQ);
-//				}
-//				sample = ocm.localReward + (discount * MaxqV);
-//
-//				Double prevEst = qTable.getQValue(gm, m);
-//
-//				qV = (((1 - alpha) * prevEst) + (alpha * sample));
-//				qTable.addQValue(gm, m, qV);
-//				gPrimeQ.clear();
-//				
-//				
-//
-//			}
-//			env.reset();
-//
-//		}
-		
-		
-		
-//		for(int i=0; i<numEpisodes; i++) {
-//			while(!this.env.isTerminal()) {
-//				// for a game state g in environment env
-//				Game g = this.env.getCurrentGameState();
-//				// if g is terminal state, skip it.
-//				if(g.isTerminal()){
-//					continue;
-//				}
-//				// pick a move using epsilon greedy policy,
-//				// check helper method pickEpsMove(Game g) for implementation
-//				Move m = pickEpsMove(g);
-//				Outcome outcome=null;
-//				try {
-//					// outcome after executing a move
-//					outcome = this.env.executeMove(m);
-//				} catch (IllegalMoveException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//				// current q-value
-//				double qvalue = this.qTable.getQValue(outcome.s, outcome.move);
-//				double newqvalue;
-//				// updated Q(g, m) = (1 - alpha) * old Q(g, m) + alpha * (reward + discount * maxQvalue(g'))
-//				newqvalue = (1 - this.alpha)*qvalue + this.alpha*(outcome.localReward + this.discount*maxQvalue(outcome.sPrime));
-//				this.qTable.addQValue(outcome.s, outcome.move, newqvalue);
-//				
-//			}
-//			// reset after one iteration
-//		this.env.reset();
-//		}
-		
-		
-for(int i=0; i<numEpisodes; i++) {
-			
-			Game gameStates = env.game;															
-			
-			Move movez = null;																	
-			double qValue = 0.0;																		
-			Double sample = 0.0;																
-			ArrayList<Double> gPrimeQValues = new ArrayList<Double>();							
-			Double maxQValueGPrime = 0.0;														
-			
-			
-			
-			while(!(gameStates.isTerminal())) {																
-				List<Move> m = gameStates.getPossibleMoves();												
-				
-				Random rando = new Random();
-				double randDouble = rando.nextDouble();																									
-				
-				if(randDouble < epsilon) {																	
-					if(m.size()!=0) {
-						Random rando1 = new Random();
-						int num = rando1.nextInt(m.size());													
-						movez = m.get(num);																		
+		// Train the agent here using numEpisodes of the game
+		for(int i=0; i<numEpisodes; i++) {	
+			// Max Q value of gPrimeQValue 
+			Double maxQVGP = 0.0;
+			// Array list of Q values of s prime														
+			ArrayList<Double> gPQV = new ArrayList<Double>();
+			// Sample							
+			Double spl = 0.0;
+			// Move																
+			Move mv = null;
+			// Game State																	
+			Game game = env.game;
+			// Q value 															
+			double qV = 0.0;	
+			// While game is not terminal																	
+			while(!game.isTerminal()) {	
+				// Random instance															
+				Random random = new Random();
+				// Random number
+				double rDo = random.nextDouble();
+				// List of possible moves																									
+				List<Move> moves = game.getPossibleMoves();
+				// If random number is less than epsilon explore. 				
+				if(rDo < epsilon) {						
+					if(moves.size()!=0) {
+						Random random2 = new Random();
+						int no = random2.nextInt(moves.size());													
+						mv = moves.get(no);
+						// Generate random action and save the moves.																		
 					}
-					
 				}
-				else {																									
-					ArrayList<Double> bestQValueList = new ArrayList<Double>();											
-					Double bestQValue = 0.0;																			
-					for(Move bestMove : m) {
-						bestQValueList.add(qTable.getQValue(gameStates, bestMove));										
-						bestQValue = Collections.max(bestQValueList);													
+				// Else exploit.
+				else {			
+					// Array list of Q values of that state and move.																						
+					ArrayList<Double> bQVL = new ArrayList<Double>();
+					// Highest Q value of that state and move.											
+					Double bQV = 0.0;		
+					// Looping through possible moves.																	
+					for(Move best : moves) {
+						// Add Q value of that state and move to array list.
+						bQVL.add(qTable.getQValue(game, best));		
+						// Set highest Q value to max of array list.								
+						bQV = Collections.max(bQVL);													
 					}
-					
-					
-				
-					HashMap<Move,Double> moveMap = qTable.get(gameStates);												
-			
-					for(Entry<Move, Double> bestMoveMap : moveMap.entrySet()) {										
-						if(bestMoveMap.getValue().equals(bestQValue)) {
-							movez = bestMoveMap.getKey();																
-							
+					// Get the Q values of that state and move.
+					HashMap<Move,Double> mp = qTable.get(game);
+					// Looping through Q values of that state and move.												
+					for(Entry<Move, Double> bestmp : mp.entrySet()) {		
+						// If Q value is equal to highest Q value.								
+						if(bestmp.getValue().equals(bQV)) {
+							// Set move to that move.
+							mv = bestmp.getKey();																
 						}
 					}
-					
-					
-					bestQValueList.clear();																				
-						
+					// Clear array list for next state and move.
+					bQVL.clear();																				
 				}
-				
-				m.clear();																								
-				
-				
-				
-					
-				
-						Outcome bestExperience = env.executeMove(movez);													
-						Game g = bestExperience.s;																				
-						
-						
-						
-						Game gPrime = bestExperience.sPrime;																
-						List<Move> mPrime = gPrime.getPossibleMoves();     													
-						
-						
-						
-						
-						
-								for(Move mo : mPrime) {
-									
-									
-									
-										gPrimeQValues.add(qTable.getQValue(gPrime, mo));										
-										maxQValueGPrime = Collections.max(gPrimeQValues);											
-									
-								}
-								
-								if(gPrime.isTerminal() == true) {
-									maxQValueGPrime = 0.0;																			
-									
-								}
-								
-						
-						sample = bestExperience.localReward + (discount*maxQValueGPrime);											
-						
-		
-						
-						Double oldEstimate = qTable.getQValue(g, movez);															
-						
-						
-						
-						 qValue = ( ((1-alpha)*oldEstimate) + (alpha*(sample)) );													
-						 
-						
-						 
-						 qTable.addQValue(g, movez, qValue);																				
-						
-					
-					gPrimeQValues.clear();
+				// Clear possible moves for next state.
+				moves.clear();							
+				// Execute move.																	
+				Outcome Exp = env.executeMove(mv);			
+				// Target state.														
+				Game gP = Exp.sPrime;		
+				// Source state.										
+				Game gme = Exp.s;	
+				// List of possible moves of target state.																			
+				List<Move> Pr = gP.getPossibleMoves();    
+				// Looping through possible moves of target state. 													
+				for(Move mo : Pr) {
+					// Add Q value of target state and move to array list.
+					gPQV.add(qTable.getQValue(gP, mo));
+					// Set max Q value to max of array list.										
+					maxQVGP = Collections.max(gPQV);											
+					}
+				// If target state is terminal set max Q value to 0.
+					if(gP.isTerminal()) {
+					maxQVGP = 0.0;																			
+					}
+				// Calculate sample.
+				spl = Exp.localReward + (discount*maxQVGP);																								
+				qV = ( ((1-alpha)*(qTable.getQValue(gme, mv))) + (alpha*(spl)) );		
+				// Add Q value to Q table.											
+				qTable.addQValue(gme, mv, qV);
+				// Clear array list for next state and move.																				
+				gPQV.clear();
 				}
-				env.reset();																											
-				
-		
-
-		}
+			// Reset game/episode.
+			env.reset();																											
+			}
 		
 		
 		//--------------------------------------------------------
@@ -409,37 +257,46 @@ for(int i=0; i<numEpisodes; i++) {
 	 */
 	public Policy extractPolicy()
 	{
-		Set<Game> gameSet = qTable.keySet();													
-		
-		HashMap<Game, Move> policyMap = new HashMap<Game,Move>();									
-		
-		for(Game gameStates : gameSet) {
-			List<Move> m = gameStates.getPossibleMoves();											 
-			ArrayList<Double> bestQValueList = new ArrayList<Double>();								
-			Double bestQValue = 0.0;																
-			//if(m.size()!=0) {
-				for(Move movez : m) {																
-					bestQValueList.add(qTable.getQValue(gameStates, movez));						
-					bestQValue = Collections.max(bestQValueList);																	
-				}
-			//}	
-			Move bestMove = null;																	
-			
-			HashMap<Move,Double> moveMap = qTable.get(gameStates);									
-			
-			for(Entry<Move, Double> bestMoveMap : moveMap.entrySet()) {							
-				if(bestMoveMap.getValue().equals(bestQValue)) {
-					bestMove = bestMoveMap.getKey();												
+		// States
+		Set<Game> games = qTable.keySet();
+		// Policy map													
+		HashMap<Game, Move> map = new HashMap<Game,Move>();	
+		// Looping through states.								
+		for(Game g : games) {
+			// List of possible moves.
+			List<Move> moves = g.getPossibleMoves();		
+			// Highest Q value of that state and move.
+			Double bQ = 0.0;		
+			// Array list of Q values of that state and move.														
+			ArrayList<Double> bQVL = new ArrayList<Double>();	
+			// Looping through possible moves.							
+			for(Move move : moves) {		
+				// Add Q value of that state and move to array list.														
+				bQVL.add(qTable.getQValue(g, move));				
+				// Set highest Q value to max of array list.		
+				bQ = Collections.max(bQVL);																	
+			}
+			// Get the Q value and move and in map.
+			HashMap<Move,Double> mm = qTable.get(g);
+			// Best move.									
+			Move best = null;	
+			// Looping through MAP.																
+			for(Entry<Move, Double> bestm : mm.entrySet()) {
+				// If Q value is equal to highest Q value.							
+				if(bestm.getValue().equals(bQ)) {
+					// Move with highest Q value.
+					best = bestm.getKey();												
 				}
 			}
-			policyMap.put(gameStates, bestMove);													
-			bestQValueList.clear();																	
-			
+			// Add to policy map.
+		    map.put(g, best);	
+					    // Clear array list for next state and move.												
+			bQVL.clear();																	
 		}
-		
-		Policy policy = new Policy(policyMap);												
+		// Create policy
+		Policy policy = new Policy(map);
+		// Return policy												
 		return policy;	
-		
 	}
 	
 	public static void main(String a[]) throws IllegalMoveException

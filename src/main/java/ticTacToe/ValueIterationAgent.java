@@ -1,10 +1,12 @@
 package ticTacToe;
 
 /**
- * Testing
+ * YEAR - 3 
  * Ajay Menon
  * H00418802
  */
+
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -107,27 +109,42 @@ public class ValueIterationAgent extends Agent {
 	 */
 	public void iterate()
 	{
+		// Steps
 		int l = k;
+		// Looping by steps
 		while(l != 0 && l>0){
+			// States
 			Set<Game> games = valueFunction.keySet();
+			// Looping by states
 			for(Game g: games){
+				// Ensuring not in terminal state
 				if(!g.isTerminal()){
+					// List of possible moves
 					List<Move> moves = g.getPossibleMoves();
+					// Setting max to minimal number
 					double max = -50;
+					// Looping by possible moves
 					for(Move m: moves){
+						// Initializing VS to 0
 						double vs = 0;
+						// List of transition states/outcomes
 						List<TransitionProb> outcomes = mdp.generateTransitions(g, m);
+						// Looping by transition states/outcomes
 						for(int i = 0; i < outcomes.size(); i++){
+							// Calculating VS by bellman fords equation (by retrieving necessary values)
 							Game vsp=outcomes.get(i).outcome.sPrime;
 							vs += outcomes.get(i).prob * (outcomes.get(i).outcome.localReward + this.discount * valueFunction.get(vsp));
 						}
+						// Checking is VS lower than max, if so set new max
 						if (max < vs){
 							max = vs;
 						}
 					}	
+					// Adding to hashmap
 					this.valueFunction.put(g, max);
 				}
 			}
+			// Step - 1
 			l--;	
 		}
 	}
@@ -140,27 +157,42 @@ public class ValueIterationAgent extends Agent {
 	 */
 	public Policy extractPolicy()
 	{
+		// Initializing policy
 		Policy p = new Policy();
+		// States
 		Set<Game> games = valueFunction.keySet();
+		// Looping by states
 		for (Game g: games){
+			// List of possible moves
 			List<Move> moves = g.getPossibleMoves();
+			// Setting max to minimal number
 			double max = -50;
+			// Initializing best move
 			Move best = null;
+			// Looping by possible moves
 			for(Move m: moves){
+				// Initializing VS to 0
 				double vs = 0;
+				// List of transition states/outcomes
 				List<TransitionProb> outcomes = mdp.generateTransitions(g, m);
+				// Looping by transition states/outcomes
 				for(int i = 0; i < outcomes.size(); i++){
+					// Calculating VS by bellman fords equation (by retrieving necessary values)
 					Game vsp=outcomes.get(i).outcome.sPrime;
 					vs += outcomes.get(i).prob * (outcomes.get(i).outcome.localReward + this.discount * valueFunction.get(vsp));
 				}
+				// Checking is VS lower than max, if so set new max
 				if (max < vs){
 					max = vs;
+					// Setting best move
 					best = m;
 				}
+				// Adding to hashmap
 				p.policy.put(g, best);
 			}
 
 		}
+		// Returning policy
 		return p;
 	}
 	
